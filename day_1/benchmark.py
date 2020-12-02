@@ -4,10 +4,10 @@ from utils import read_input
 import timeit
 
 
-
 def test_1():
     entries = read_input("./input_3.txt")
     solution_1(entries, 3)
+
 
 def test_2():
     entries = read_input("./input_3.txt")
