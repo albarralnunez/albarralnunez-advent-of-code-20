@@ -1,7 +1,8 @@
-from day_1 import solution as solution_1
-from day1_v2 import solution as solution_2
-from utils import read_input
 import timeit
+
+from day1_v2 import solution as solution_2
+from day_1 import solution as solution_1
+from utils import read_input
 
 
 def test_1():

@@ -1,6 +1,6 @@
-from typing import Tuple, Iterator
-from itertools import combinations, dropwhile
 from functools import reduce
+from itertools import combinations, dropwhile
+from typing import Iterator, Tuple
 
 from utils import prod, read_input
 

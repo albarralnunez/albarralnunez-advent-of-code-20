@@ -1,9 +1,8 @@
+import re
 from pathlib import Path
 from typing import Iterator, Optional
-import re
 
 from models import Password
-
 
 password_regex = re.compile("^([0-9]+)-([0-9]+) ([a-z]): ([a-z]+)$")
 

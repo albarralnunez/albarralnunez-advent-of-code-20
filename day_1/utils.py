@@ -1,7 +1,7 @@
-from typing import Iterable, Iterator
 import operator
 from functools import reduce
 from pathlib import Path
+from typing import Iterable, Iterator
 
 
 def read_input(input_file_path: str) -> Iterator[int]:
