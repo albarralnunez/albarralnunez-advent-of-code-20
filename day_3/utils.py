@@ -13,7 +13,3 @@ def read_input(input_file_path: str) -> List[str]:
     """
     with Path(input_file_path).open() as input:
         return input.read().splitlines()
-
-
-def prod(numbers: Iterator[int]) -> int:
-    return reduce(operator.mul, numbers, 1)
