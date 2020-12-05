@@ -6,13 +6,8 @@ from utils import read_input
 
 def is_passport_valid(passport):
     required = [
-        "byr",
-        "iyr",
-        "eyr",
-        "hgt",
-        "hcl",
-        "ecl",
-        "pid",
+        "byr", "iyr", "eyr", "hgt",
+        "hcl", "ecl", "pid",
     ]
     return all(map(lambda x: x in passport, required))
 
