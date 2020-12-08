@@ -78,8 +78,8 @@ class Code:
     def __next__(self):
         instruction = copy(self.instructions[self.pointer])
         old_pointer = self.pointer
-        self._stop_iteration(instruction)
         instruction.execute(self)
+        self._stop_iteration(instruction)
         self.executed_instructions.append(old_pointer)
         return instruction
 
@@ -123,6 +123,8 @@ def runner(code: Code, execution_number: int = 1, debugger_file=None):
     for instruction in code:
         if debugger_file is not None:
             debugger_file.write(f"{instruction}: {code}\n")
+    if debugger_file is not None:
+        debugger_file.write(f"{instruction}: {code}\n")
     return code.accumulator
 
 

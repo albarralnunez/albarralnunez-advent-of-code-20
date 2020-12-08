@@ -34,4 +34,4 @@ def test_2():
         ]
     )
     solution = code_fixer(code)
-    assert solution == 2  # error in aoc solution
+    assert solution == 8
