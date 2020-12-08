@@ -3,7 +3,7 @@ from copy import copy
 from dataclasses import dataclass, field
 from functools import reduce
 from pathlib import Path
-from typing import Callable, List, Type
+from typing import Callable, List, Optional, TextIO, Type
 
 
 class InputError(Exception):
@@ -87,63 +87,70 @@ class Code:
         return self
 
 
-def flip_instruction(
-    instructions: List[Instruction], executed_instructions: List[int], flip: int
-):
-    instruction_to_fix_pointer = executed_instructions[flip]
-    instruction_to_fix = instructions[instruction_to_fix_pointer]
-    new_instructions = copy(instructions)
-    if isinstance(instruction_to_fix, Jmp):
-        new_instructions[instruction_to_fix_pointer] = Nop(
-            instruction_to_fix.id, instruction_to_fix.value
-        )
-    elif isinstance(instruction_to_fix, Nop):
-        new_instructions[instruction_to_fix_pointer] = Jmp(
-            instruction_to_fix.id, instruction_to_fix.value
-        )
-    return Code(new_instructions)
+@dataclass
+class Executor:
+    debugger_file: Optional[TextIO] = None
+
+    def _flip_instruction(
+        self,
+        instructions: List[Instruction],
+        executed_instructions: List[int],
+        flip: int,
+    ):
+        instruction_to_fix_pointer = executed_instructions[flip]
+        instruction_to_fix = instructions[instruction_to_fix_pointer]
+        new_instructions = copy(instructions)
+        if isinstance(instruction_to_fix, Jmp):
+            new_instructions[instruction_to_fix_pointer] = Nop(
+                instruction_to_fix.id, instruction_to_fix.value
+            )
+        elif isinstance(instruction_to_fix, Nop):
+            new_instructions[instruction_to_fix_pointer] = Jmp(
+                instruction_to_fix.id, instruction_to_fix.value
+            )
+        return Code(new_instructions)
+
+    def code_fixer(self, code: Code, execution_number: int = 1):
+        original_instructions = copy(code.instructions)
+        flip = -1
+        accumulator = self.runner(code, execution_number)
+        executed_instructions = copy(code.executed_instructions)
+        while code.finished is False:
+            code = self._flip_instruction(
+                original_instructions, executed_instructions, flip
+            )
+            execution_number += 1
+            accumulator = self.runner(code, execution_number)
+            flip -= 1
+        return accumulator
+
+    def runner(self, code: Code, execution_number: int = 1):
+        if self.debugger_file is not None:
+            self.debugger_file.write(f"{'#'*30} - {execution_number} - {'#'*30}\n")
+        for instruction in code:
+            if self.debugger_file is not None:
+                self.debugger_file.write(f"{instruction}: {code}\n")
+        if self.debugger_file is not None:
+            self.debugger_file.write(f"{instruction}: {code}\n")
+        return code.accumulator
 
 
-def code_fixer(code: Code, execution_number: int = 1, debugger_file=None):
-    original_instructions = copy(code.instructions)
-    flip = -1
-    accumulator = runner(code, execution_number, debugger_file)
-    executed_instructions = copy(code.executed_instructions)
-    while code.finished is False:
-        code = flip_instruction(original_instructions, executed_instructions, flip)
-        execution_number += 1
-        accumulator = runner(code, execution_number, debugger_file)
-        flip -= 1
-    return accumulator
-
-
-def runner(code: Code, execution_number: int = 1, debugger_file=None):
-    if debugger_file is not None:
-        debugger_file.write(f"{'#'*30} - {execution_number} - {'#'*30}\n")
-    for instruction in code:
-        if debugger_file is not None:
-            debugger_file.write(f"{instruction}: {code}\n")
-    if debugger_file is not None:
-        debugger_file.write(f"{instruction}: {code}\n")
-    return code.accumulator
-
-
-def solver(id: str, input_path_str: str, debug_path_str, executor: Callable):
+def solver(id: str, input_path_str: str, debug_path_str, method_name: str):
     input_path = Path(input_path_str)
     code_to_fix = Code.load(input_path)
     debug_path = Path(debug_path_str)
     debug_path.touch()
     with debug_path.open("+w") as debugger_file:
-        print(
-            f"Solution {id}: {executor(code=code_to_fix, debugger_file=debugger_file)}"
-        )
+        executor = Executor(debugger_file=debugger_file)
+        method = getattr(executor, method_name)
+        print(f"Solution {id}: {method(code=code_to_fix)}")
 
 
 def main():
-    solver("test_1", "./input_test.txt", "./solution_test_1.debug", runner)
-    solver("1", "./input.txt", "./solution_1.debug", runner)
-    solver("test_2", "./input_test.txt", "./solution_test_2.debug", code_fixer)
-    solver("2", "./input.txt", "./solution_2.debug", code_fixer)
+    solver("test_1", "./input_test.txt", "./solution_test_1.debug", "runner")
+    solver("1", "./input.txt", "./solution_1.debug", "runner")
+    solver("test_2", "./input_test.txt", "./solution_test_2.debug", "code_fixer")
+    solver("2", "./input.txt", "./solution_2.debug", "code_fixer")
 
 
 if __name__ == "__main__":

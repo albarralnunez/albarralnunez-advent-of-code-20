@@ -1,4 +1,4 @@
-from day_8 import Acc, Code, Jmp, Nop, code_fixer, runner
+from day_8 import Acc, Code, Executor, Jmp, Nop
 
 
 def test():
@@ -15,7 +15,8 @@ def test():
             Acc(8, 6),
         ]
     )
-    runner(code)
+    executor = Executor()
+    executor.runner(code)
     assert code.accumulator == 5
 
 
@@ -33,5 +34,6 @@ def test_2():
             Acc(8, 6),
         ]
     )
-    solution = code_fixer(code)
+    executor = Executor()
+    solution = executor.code_fixer(code)
     assert solution == 8
