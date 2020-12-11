@@ -48,11 +48,9 @@ def problem_2(adapters: Bag):
         lambda x: x[0] == 1, groupby(adapters_differences)
     )
     len_groups_of_ones: Iterator[int] = map(lambda x: len(list(x[1])), groups_of_ones)
-    # print(list(len_groups_of_ones))
     possible_combinations: Iterator[int] = map(
         lambda x: aux_combinations[x], filter(lambda x: x != 1, len_groups_of_ones)
     )
-    # print(list(possible_combinations))
     result = prod(possible_combinations)
     return result
 
