@@ -57,9 +57,6 @@ def problem_2(adapters: Bag):
     return result
 
 
-1, 2, 3, 4
-
-
 def main():
     input_test_1 = read_input("./input_test_1.txt")
     input_test_2 = read_input("./input_test_2.txt")
