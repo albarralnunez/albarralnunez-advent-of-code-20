@@ -16,7 +16,7 @@ operations = [add, sub, mul, div]
 def generate_opreations(posibilities: list, number: int) -> list[int]:
         combinations_operations = list(zip_longest([], posibilities, fillvalue=number))
         all_posible_operations = zip_longest([], operations, fillvalue=combinations_operations)
-        all_results = chain(
+        all_results = list(filter(lambda x: x is not None, chain(
             *map(
                 lambda x: map(
                     lambda y: x[1](y[0],y[1]),
@@ -24,8 +24,8 @@ def generate_opreations(posibilities: list, number: int) -> list[int]:
                 ),
                 all_posible_operations
             )
-        )
-        return filter(lambda x: x is not None, all_results)
+        )))
+        return [min(all_results), max(all_results)]
 
 def main(a, array):
     solution = list(reduce(generate_opreations, array, [a]))
